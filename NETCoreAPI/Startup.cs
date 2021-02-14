@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+// Import namespace
 using Newtonsoft.Json.Serialization;
 
 namespace NETCoreAPI
@@ -34,6 +35,7 @@ namespace NETCoreAPI
             });
 
             // JSON Serializer
+            // Install Microsoft.AspNetCore.Mvc.NewtonsoftJson
             services.AddControllersWithViews()
                 .AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft
@@ -47,6 +49,7 @@ namespace NETCoreAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Use CORS
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             if (env.IsDevelopment())
