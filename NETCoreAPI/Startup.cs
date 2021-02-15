@@ -11,6 +11,9 @@ using System.Linq;
 using System.Threading.Tasks;
 // Import namespace
 using Newtonsoft.Json.Serialization;
+// For photos
+using System.IO;
+using Microsoft.Extensions.FileProviders;
 
 namespace NETCoreAPI
 {
@@ -64,6 +67,14 @@ namespace NETCoreAPI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            // save photos
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), "Photos")),
+                RequestPath="/Photos"
             });
         }
     }
