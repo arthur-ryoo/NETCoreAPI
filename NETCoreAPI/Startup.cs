@@ -9,7 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+// Import namespace
 using Newtonsoft.Json.Serialization;
+// For photos
+using System.IO;
+using Microsoft.Extensions.FileProviders;
 
 namespace NETCoreAPI
 {
@@ -34,6 +38,7 @@ namespace NETCoreAPI
             });
 
             // JSON Serializer
+            // Install Microsoft.AspNetCore.Mvc.NewtonsoftJson
             services.AddControllersWithViews()
                 .AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft
@@ -47,6 +52,7 @@ namespace NETCoreAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Use CORS
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             if (env.IsDevelopment())
@@ -61,6 +67,14 @@ namespace NETCoreAPI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            // save photos
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), "Photos")),
+                RequestPath="/Photos"
             });
         }
     }
