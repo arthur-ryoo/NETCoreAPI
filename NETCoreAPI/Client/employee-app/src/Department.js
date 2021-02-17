@@ -28,9 +28,8 @@ export default class Department extends Component {
         this.refreshList();
     }
 
-    // componentDidUpdate() {
-    //     this.refreshList();
-    // }
+    componentDidUpdate() {
+    }
 
     deleteDep(depid) {
         if (window.confirm('Are you sure?')) {
