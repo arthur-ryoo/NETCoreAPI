@@ -27,50 +27,31 @@ namespace NETCoreAPI.Controllers
         [HttpGet]
         public JsonResult Get()
         {
-            string query = @"
-                    select DepartmentId, DepartmentName from dbo.Department";
-            DataTable table = new DataTable();
+            DataTable departmentTable = new DataTable();
             // Database connection string
-            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
-            SqlDataReader myReader;
-            using(SqlConnection myCon = new SqlConnection(sqlDataSource))
+            using(SqlConnection sqlConnection = new SqlConnection(_configuration.GetConnectionString("EmployeeAppCon")))
             {
-                myCon.Open();
-                using (SqlCommand myCommand = new SqlCommand(query, myCon))
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-
-                    myReader.Close();
-                    myCon.Close();
-                }
+                sqlConnection.Open();
+                SqlDataAdapter sqlDa = new SqlDataAdapter("sp_GetAllDepartmentIdAndName", sqlConnection);
+                sqlDa.SelectCommand.CommandType = CommandType.StoredProcedure;
+                sqlDa.Fill(departmentTable);
             }
 
-            return new JsonResult(table);
+            return new JsonResult(departmentTable);
         }
 
         [HttpPost]
         public JsonResult Post(Department dep)
         {
-            string query = @"
-                    insert into dbo.Department values
-                    ('" + dep.DepartmentName + @"')
-                    ";
-            DataTable table = new DataTable();
+            DataTable departmentTable = new DataTable();
             // Database connection string
-            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
-            SqlDataReader myReader;
-            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            using (SqlConnection sqlConnection = new SqlConnection(_configuration.GetConnectionString("EmployeeAppCon")))
             {
-                myCon.Open();
-                using (SqlCommand myCommand = new SqlCommand(query, myCon))
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-
-                    myReader.Close();
-                    myCon.Close();
-                }
+                sqlConnection.Open();
+                SqlCommand sqlCmd = new SqlCommand("sp_InsertDepartmentByName", sqlConnection);
+                sqlCmd.CommandType = CommandType.StoredProcedure;
+                sqlCmd.Parameters.AddWithValue("DepartmentName", dep.DepartmentName);
+                sqlCmd.ExecuteNonQuery();
             }
 
             return new JsonResult("Added Successfully");
