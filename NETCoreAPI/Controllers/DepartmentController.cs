@@ -28,7 +28,6 @@ namespace NETCoreAPI.Controllers
         public JsonResult Get()
         {
             DataTable departmentTable = new DataTable();
-            // Database connection string
             using(SqlConnection sqlConnection = new SqlConnection(_configuration.GetConnectionString("EmployeeAppCon")))
             {
                 sqlConnection.Open();
@@ -43,8 +42,6 @@ namespace NETCoreAPI.Controllers
         [HttpPost]
         public JsonResult Post(Department dep)
         {
-            DataTable departmentTable = new DataTable();
-            // Database connection string
             using (SqlConnection sqlConnection = new SqlConnection(_configuration.GetConnectionString("EmployeeAppCon")))
             {
                 sqlConnection.Open();
@@ -60,26 +57,14 @@ namespace NETCoreAPI.Controllers
         [HttpPut]
         public JsonResult Put(Department dep)
         {
-            string query = @"
-                    update dbo.Department set
-                    DepartmentName = '" + dep.DepartmentName + @"'
-                    where DepartmentId = " + dep.DepartmentId + @"
-                    ";
-            DataTable table = new DataTable();
-            // Database connection string
-            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
-            SqlDataReader myReader;
-            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            using (SqlConnection sqlConnection = new SqlConnection(_configuration.GetConnectionString("EmployeeAppCon")))
             {
-                myCon.Open();
-                using (SqlCommand myCommand = new SqlCommand(query, myCon))
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-
-                    myReader.Close();
-                    myCon.Close();
-                }
+                sqlConnection.Open();
+                SqlCommand sqlCmd = new SqlCommand("sp_UpdateDepartmentNameById", sqlConnection);
+                sqlCmd.CommandType = CommandType.StoredProcedure;
+                sqlCmd.Parameters.AddWithValue("DepartmentId", dep.DepartmentId);
+                sqlCmd.Parameters.AddWithValue("DepartmentName", dep.DepartmentName);
+                sqlCmd.ExecuteNonQuery();
             }
 
             return new JsonResult("Updated Successfully");
@@ -88,25 +73,13 @@ namespace NETCoreAPI.Controllers
         [HttpDelete("{id}")]
         public JsonResult Delete(int id)
         {
-            string query = @"
-                    delete from dbo.Department
-                    where DepartmentId = " + id + @"
-                    ";
-            DataTable table = new DataTable();
-            // Database connection string
-            string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
-            SqlDataReader myReader;
-            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            using (SqlConnection sqlConnection = new SqlConnection(_configuration.GetConnectionString("EmployeeAppCon")))
             {
-                myCon.Open();
-                using (SqlCommand myCommand = new SqlCommand(query, myCon))
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-
-                    myReader.Close();
-                    myCon.Close();
-                }
+                sqlConnection.Open();
+                SqlCommand sqlCmd = new SqlCommand("sp_DeleteDepartmentById", sqlConnection);
+                sqlCmd.CommandType = CommandType.StoredProcedure;
+                sqlCmd.Parameters.AddWithValue("DepartmentId", id);
+                sqlCmd.ExecuteNonQuery();
             }
 
             return new JsonResult("Deleted Successfully");
