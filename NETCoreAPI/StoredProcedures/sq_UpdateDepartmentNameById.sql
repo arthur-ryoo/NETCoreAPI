@@ -16,7 +16,8 @@ GO
 
 --IF OBJECT_ID('[dbo].[sp_GetAllDepartmentIdAndName]', 'P') IS NOT NULL
 --  DROP PROCEDURE [dbo].[sp_GetAllDepartmentIdAndName]--GO
-CREATE PROCEDURE [dbo].[sp_InsertDepartmentByName]
+CREATE PROCEDURE [dbo].[sp_UpdateDepartmentNameById]
+	@DepartmentId INT,
 	@DepartmentName VARCHAR(500)
 
 AS
@@ -27,8 +28,10 @@ BEGIN
 	SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-INSERT INTO Department(DepartmentName)
-	VALUES(@DepartmentName)
+		UPDATE Department
+		SET
+			DepartmentName = @DepartmentName
+		WHERE DepartmentId = @DepartmentId
 END
 GO
 
